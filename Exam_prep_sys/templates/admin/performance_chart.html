@@ -1,0 +1,65 @@
+{% extends "admin/change_list.html" %} 
+{% block content %}
+
+<h2>📊 Test Attempt Percentage of Students</h2>
+<hr>
+
+<div class="card p-4 mb-4 shadow-sm" style="max-width: 100%; height: 450px;">
+    <canvas id="performanceChart" style="max-width: 100%; height: 100%;"></canvas>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const ctx = document.getElementById('performanceChart').getContext('2d');
+const performanceChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ labels|safe }},
+        datasets: [{
+            label: '% of Students Attempted',
+            data: {{ values|safe }},
+            backgroundColor: {{ colors|safe }},
+            borderColor: 'rgba(0,0,0,0.1)',
+            borderWidth: 1,
+            borderRadius: 6,
+            barThickness: 40
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Test Attempt Rate Among Students',
+                font: { size: 18 }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.parsed.y + '% students attempted';
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                    stepSize: 10,
+                    font: { size: 14 }
+                }
+            },
+            x: {
+                ticks: { font: { size: 14 } }
+            }
+        }
+    }
+});
+</script>
+
+{{ block.super }}
+{% endblock %}

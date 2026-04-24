@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="col-md-6">
+        <div class="card p-4 shadow-lg rounded-4 border-0">
+            <h2 class="text-center mb-4 fw-bold"  style="font-family: 'Lobster', cursive;">Create Account</h2>
+
+            <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label for="id_username" class="form-label">Username</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+            <div class="text-danger small">{{ form.username.errors.0 }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_email" class="form-label">Email</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+            <div class="text-danger small">{{ form.email.errors.0 }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_password1" class="form-label">Password</label>
+        {{ form.password1 }}
+        {% if form.password1.errors %}
+            <div class="text-danger small">{{ form.password1.errors.0 }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_password2" class="form-label">Confirm Password</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}
+            <div class="text-danger small">{{ form.password2.errors.0 }}</div>
+        {% endif %}
+    </div>
+
+   <div class="mb-3">
+    <label class="form-label">Select your role</label>
+    {% for radio in form.role %}
+        <div class="form-check">
+            {{ radio.tag }}
+            <label class="form-check-label" for="{{ radio.id_for_label }}">
+                {{ radio.choice_label }}
+            </label>
+        </div>
+    {% endfor %}
+</div>
+
+    <button type="submit" class="btn btn-primary w-100 rounded-pill">Sign Up</button>
+</form>
+
+            <p class="text-center mt-4 mb-0">
+                Already have an account?
+                <a href="{% url 'login' %}">Login here</a>.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

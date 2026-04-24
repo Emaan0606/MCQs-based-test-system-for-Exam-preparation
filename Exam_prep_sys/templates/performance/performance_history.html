@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card border-success shadow p-4 rounded">
+        <h2 class="text-center text-primary mb-4">📊 <strong>Performance History </strong> </h2>
+        
+        <div id="no-data-message" class="text-center text-muted" style="display: none;">
+            <h4>No performance data found.</h4>
+            <p>Please take some tests to see your performance history.</p>
+            <a href="{% url 'test_list' %}" class="btn btn-success mt-3">Take a Test</a>
+        </div>
+    
+        <div id="chart-container" style="display: none; width: 100%; max-width: 900px; margin: auto;">
+            <canvas id="performanceChart" height="400"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    fetch("{% url 'performance_history_data' %}")
+        .then(response => response.json())
+        .then(data => {
+            if (data.length === 0) {
+                document.getElementById('no-data-message').style.display = 'block';
+                return;
+            }
+            document.getElementById('chart-container').style.display = 'block';
+            function getColor(score) {
+                if (score < 40) return 'rgba(220, 53, 69, 0.6)';    // Red
+                if (score < 70) return 'rgba(255, 193, 7, 0.6)';     // Yellow
+                return 'rgba(25, 135, 84, 0.6)';                     // Green
+            }
+            const scores = data.map(entry => parseFloat(entry.score));
+            const labels = data.map(entry => `${entry.test} (Attempt ${entry.attempt})`);
+            const colors = scores.map(getColor); 
+
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar', // Histogram style
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Score (%)',
+                        data: scores,
+                        backgroundColor: colors,
+                        borderColor: '#000000',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                            
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: 'Blue'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+});
+</script>
+{% endblock %}

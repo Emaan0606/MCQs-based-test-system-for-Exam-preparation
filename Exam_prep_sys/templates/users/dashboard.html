@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+<style>
+    .small-chart {
+        width: 300px !important;
+        height: 300px !important;
+}
+</style>
+<div class="container mt-4">
+    <h2 class="text-center fw-bold mb-4" style="font-family: 'Lobster', cursive;" style="color: #23297A;">Welcome, {{ request.user.username }}</h2>
+
+    <!-- Pie Chart -->
+    <div class="d-flex justify-content-center mb-4">
+        <canvas id="testChart" class="small-chart"></canvas>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row text-center mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 shadow rounded-4">
+                <h5>Total Tests</h5>
+                <p class="fs-3 fw-bold text-primary">{{ total_tests }}</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 shadow rounded-4">
+                <h5>Open Tests</h5>
+                <p class="fs-3 fw-bold text-warning">{{ open_tests }}</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 shadow rounded-4">
+                <h5>Finished Tests</h5>
+                <p class="fs-3 fw-bold text-success">{{ finished_tests }}</p>
+            </div>
+        </div>
+    </div> Is ko column se row me convert kar do
+
+    <!-- Test Assignment Table -->
+    <div class="card shadow p-4 mb-5">
+        <h4 class="mb-3">Assessments List</h4>
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Test Title</th>
+                    <th>Started At</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in test_attempts %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ attempt.test.title }}</td>
+                    <td>{{ attempt.started_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ attempt.score }}</td>
+                    <td>{{ attempt.percentage|floatformat:2 }}%</td>
+                    <td><a href="{% url 'test_result' attempt.id %}" class="btn btn-info">View Report</a></td>
+                    
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No assessments found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('testChart').getContext('2d');
+const testChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Total Tests', 'Open Tests', 'Finished Tests'],
+        datasets: [{
+            label: 'Test chart',
+            data: [{{ total_tests }}, {{ open_tests }}, {{ finished_tests }}],
+            backgroundColor: ['#28a745', ' #FFA600', '#FF6361'],
+            borderColor: '#fff',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' }
+        }
+    }
+});
+</script>
+{% endblock %}

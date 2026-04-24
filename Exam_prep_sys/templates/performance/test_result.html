@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class=="fw-bold" style="color: #6f42c1;"><strong>Test Result: {{ test.title }}</strong></h2>
+    <p class="lead">Score: {{ score }} / {{ total }} ({{ percentage }}%)</p>
+
+    <hr>
+
+    {% for answer in answers %}
+        <div class="mb-4">
+            <h5>Q{{ forloop.counter }}. {{ answer.question }}</h5>
+            <ul class="list-group">
+                {% for option in answer.options %}
+                    <li class="list-group-item
+                        {% if option == answer.correct %}list-group-item-success{% endif %}
+                        {% if option == answer.selected and option != answer.correct %}list-group-item-danger{% endif %}
+                    ">
+                        {{ option }}
+                        {% if option == answer.correct %}
+                            <span class="badge bg-success float-end">Correct Answer</span>
+                        {% elif option == answer.selected %}
+                            <span class="badge bg-danger float-end">Your Answer</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            {% if answer.explanation %}
+                <div class="mt-2 p-2 border-start border-3 border-info bg-light rounded">
+                    <strong>Explanation:</strong> {{ answer.explanation }}
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
